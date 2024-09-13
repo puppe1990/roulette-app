@@ -42,14 +42,15 @@ const DiscountRoulette = () => {
     }
 
     // Calculate rotation to land on the selected slice
-    const randomSpins = Math.floor(Math.random() * 3) + 3; // Between 3 and 5 spins
+    const randomSpins = Math.floor(Math.random() * 3) + 5; // Between 5 and 7 spins
     const totalRotation = randomSpins * 360;
 
     // Adjust the rotation to align the selected slice under the arrow
     const targetSliceRotation = selectedIndex * sliceDegree + sliceDegree / 2;
-    const finalRotation = totalRotation + (360 - targetSliceRotation);
+    const currentRotation = rotation % 360; // Normalize current rotation to [0, 360)
+    const rotateBy = totalRotation + (360 - targetSliceRotation) - currentRotation;
 
-    setRotation((prev) => prev + finalRotation);
+    setRotation((prev) => prev + rotateBy);
 
     setTimeout(() => {
       setSpinning(false);
