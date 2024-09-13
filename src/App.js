@@ -63,18 +63,26 @@ const DiscountRoulette = () => {
       style={{ backgroundColor: '#ffdce3' }}
     >
       <h1
-        className="text-4xl font-bold mb-8 text-center"
+        className="text-2xl sm:text-4xl font-bold mb-8 text-center"
         style={{ color: '#cf0265' }}
       >
         Roleta da Sorte Purchase Store - Dia do Cliente
       </h1>
       <div
         className="relative mb-8"
-        style={{ width: '500px', height: '500px' }}
+        style={{
+          width: '90vw',
+          height: '90vw',
+          maxWidth: '500px',
+          maxHeight: '500px',
+        }}
       >
         {/* Position the arrow above the wheel */}
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-10">
-          <ArrowDown size={48} className="text-black" />
+        <div
+          className="absolute top-0 left-1/2 transform -translate-x-1/2 z-10"
+          style={{ width: '10%', maxWidth: '48px' }}
+        >
+          <ArrowDown className="w-full h-auto text-black" />
         </div>
         <div
           className="w-full h-full rounded-full overflow-hidden shadow-lg"
@@ -83,7 +91,7 @@ const DiscountRoulette = () => {
               ? 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)'
               : 'none',
             transform: `rotate(${rotation}deg)`,
-            border: `8px solid #cf0265`,
+            border: '8px solid #cf0265',
           }}
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -108,17 +116,17 @@ const DiscountRoulette = () => {
               // Calculate text position closer to the center
               const textAngle = startAngle + sliceDegree / 2;
               const textRadians = ((textAngle - 90) * Math.PI) / 180;
-              const textX = 50 + 30 * Math.cos(textRadians);
-              const textY = 50 + 30 * Math.sin(textRadians);
+              const textX = 50 + 25 * Math.cos(textRadians);
+              const textY = 50 + 25 * Math.sin(textRadians);
 
               // Determine font size based on text length
-              let fontSize = 4;
+              let fontSize = 3.5;
               const textLength = text.replace('\n', '').length;
               if (textLength > 10) {
-                fontSize = 3.5;
+                fontSize = 3;
               }
               if (textLength > 15) {
-                fontSize = 3;
+                fontSize = 2.5;
               }
 
               return (
@@ -153,13 +161,13 @@ const DiscountRoulette = () => {
         </div>
       </div>
       <div className="text-center mb-8">
-        <p className="text-xl mb-4" style={{ color: '#cf0265' }}>
+        <p className="text-lg sm:text-xl mb-4" style={{ color: '#cf0265' }}>
           Gire a roleta e ganhe na hora um super desconto!
         </p>
         <button
           onClick={spinWheel}
           disabled={spinning}
-          className="px-8 py-3 text-white text-xl rounded-full focus:outline-none focus:ring-4 disabled:opacity-50 transition"
+          className="px-6 sm:px-8 py-2 sm:py-3 text-white text-lg sm:text-xl rounded-full focus:outline-none focus:ring-4 disabled:opacity-50 transition"
           style={{
             backgroundColor: '#cf0265',
           }}
@@ -169,7 +177,7 @@ const DiscountRoulette = () => {
       </div>
       {result && (
         <div
-          className="text-2xl font-bold text-center"
+          className="text-xl sm:text-2xl font-bold text-center"
           role="alert"
           aria-live="assertive"
           style={{ color: '#cf0265' }}
