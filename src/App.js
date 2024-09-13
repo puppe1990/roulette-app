@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { ArrowDown } from 'lucide-react';
 
 const discounts = [
-  { text: '30% OFF', probability: 0.01, color: '#ff7ab5', textColor: 'black' },
-  { text: '5% OFF', probability: 0.10, color: '#ffd2e6', textColor: 'black' },
-  { text: 'FRETE\nGRÁTIS', probability: 0.045, color: '#ff7ab5', textColor: 'black' },
-  { text: '15% OFF', probability: 0.14, color: '#ffd2e6', textColor: 'black' },
-  { text: '15% OFF', probability: 0.15, color: '#ff7ab5', textColor: 'black' },
-  { text: '5% OFF', probability: 0.12, color: '#ffd2e6', textColor: 'black' },
-  { text: 'TENTE\nNOVAMENTE', probability: 0.1199, color: '#ff7ab5', textColor: 'black' },
-  { text: '20% OFF', probability: 0.04, color: '#ffd2e6', textColor: 'black' },
-  { text: 'FRETE\nGRÁTIS', probability: 0.065, color: '#ff7ab5', textColor: 'black' },
-  { text: 'BRINDE DE\nSKIN CARE', probability: 0.05, color: '#ffd2e6', textColor: 'black' },
-  { text: 'VESTIDO DA\nNOVA COLEÇÃO', probability: 0.0002, color: '#ff7ab5', textColor: 'black' },
-  { text: 'TENTE\nNOVAMENTE', probability: 0.1599, color: '#ffd2e6', textColor: 'black' },
+  { text: '30% OFF', probability: 0.01, code: 'SDC30', color: '#ff7ab5', textColor: 'black' },
+  { text: 'TENTE\nNOVAMENTE', probability: 0.1199, code: '', color: '#ffd2e6', textColor: 'black' },
+  { text: '20% OFF', probability: 0.04, code: 'SVT20', color: '#ff7ab5', textColor: 'black' },
+  { text: '15% OFF', probability: 0.14, code: 'KJIOI15', color: '#ffd2e6', textColor: 'black' },
+  { text: '15% OFF', probability: 0.15, code: 'PAPUA15', color: '#ff7ab5', textColor: 'black' },
+  { text: '5% OFF', probability: 0.12, code: 'SMLL5', color: '#ffd2e6', textColor: 'black' },
+  { text: '5% OFF', probability: 0.10, code: '5FJK', color: '#ff7ab5', textColor: 'black' },
+  { text: 'FRETE\nGRÁTIS', probability: 0.045, code: 'G7KL', color: '#ffd2e6', textColor: 'black' },
+  { text: 'FRETE\nGRÁTIS', probability: 0.065, code: 'FRTFR0', color: '#ff7ab5', textColor: 'black' },
+  { text: 'BRINDE DE\nSKIN CARE', probability: 0.05, code: 'SKNBS0', color: '#ffd2e6', textColor: 'black' },
+  { text: 'VESTIDO DA\nNOVA COLEÇÃO', probability: 0.0002, code: 'YRGTT73', color: '#ff7ab5', textColor: 'black' },
+  { text: 'TENTE\nNOVAMENTE', probability: 0.1599, code: '', color: '#ffd2e6', textColor: 'black' },
 ];
 
 const DiscountRoulette = () => {
@@ -56,6 +56,14 @@ const DiscountRoulette = () => {
       setSpinning(false);
       setResult(discounts[selectedIndex]);
     }, 3000); // Duration should match the CSS animation duration
+  };
+
+  // Function to copy the coupon code
+  const copyCode = () => {
+    if (result && result.code) {
+      navigator.clipboard.writeText(result.code);
+      alert('Código copiado para a área de transferência!');
+    }
   };
 
   return (
@@ -178,14 +186,44 @@ const DiscountRoulette = () => {
       </div>
       {result && (
         <div
-          className="text-xl sm:text-2xl font-bold text-center"
+          className="text-xl sm:text-2xl font-bold text-center space-y-4"
           role="alert"
           aria-live="assertive"
           style={{ color: '#cf0265' }}
         >
-          {result.text !== 'TENTE\nNOVAMENTE'
-            ? `Parabéns! Você ganhou ${result.text.replace('\n', ' ')}!`
-            : 'Tente novamente.'}
+          {result.text !== 'TENTE\nNOVAMENTE' ? (
+            <>
+              <p>
+                Parabéns! Você ganhou {result.text.replace('\n', ' ')}!
+              </p>
+              {result.code && (
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <span>Código:</span>
+                    <span className="font-mono px-2 py-1 bg-gray-200 rounded">
+                      {result.code}
+                    </span>
+                    <button
+                      onClick={copyCode}
+                      className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
+                    >
+                      Copiar
+                    </button>
+                  </div>
+                  <a
+                    href="https://www.purchasestore.com.br"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
+                  >
+                    Usar Cupom
+                  </a>
+                </div>
+              )}
+            </>
+          ) : (
+            <p>Tente novamente.</p>
+          )}
         </div>
       )}
     </div>
