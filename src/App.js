@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { ArrowDown } from 'lucide-react';
 
 const discounts = [
-  { text: '10%', color: '#FF4136', textColor: 'white' },
-  { text: '3%', color: '#0074D9', textColor: 'white' },
-  { text: '5%', color: '#FFDC00', textColor: 'black' },
-  { text: 'Tente', color: '#B10DC9', textColor: 'white' },
+  { text: '10%', color: '#FF4136', textColor: 'white', probability: 0.2 },
+  { text: '3%', color: '#0074D9', textColor: 'white', probability: 0.5 },
+  { text: '5%', color: '#FFDC00', textColor: 'black', probability: 0.25 },
+  { text: 'Tente', color: '#B10DC9', textColor: 'white', probability: 0.05 },
 ];
 
 const DiscountRoulette = () => {
@@ -13,28 +13,37 @@ const DiscountRoulette = () => {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
 
+  const sliceDegree = 360 / discounts.length;
+
   const spinWheel = () => {
     if (spinning) return;
     setSpinning(true);
     setResult(null);
 
-    // Calculate a random rotation between 3 and 5 spins
-    const randomSpins = Math.floor(Math.random() * 3) + 3;
-    const totalRotation = randomSpins * 360;
-    const sliceDegree = 360 / discounts.length;
-    const randomSlice = Math.floor(Math.random() * discounts.length);
-    const extraRotation = randomSlice * sliceDegree + sliceDegree / 2;
+    // Weighted random selection
+    const random = Math.random();
+    let cumulativeProbability = 0;
+    let selectedIndex = 0;
 
-    const finalRotation = totalRotation + extraRotation;
+    for (let i = 0; i < discounts.length; i++) {
+      cumulativeProbability += discounts[i].probability;
+      if (random <= cumulativeProbability) {
+        selectedIndex = i;
+        break;
+      }
+    }
+
+    // Calculate rotation to land on the selected slice
+    const randomSpins = Math.floor(Math.random() * 3) + 3; // Between 3 and 5 spins
+    const totalRotation = randomSpins * 360;
+    const finalRotation =
+      totalRotation + selectedIndex * sliceDegree + sliceDegree / 2;
 
     setRotation((prev) => prev + finalRotation);
 
     setTimeout(() => {
       setSpinning(false);
-      const normalizedRotation = (rotation + finalRotation) % 360;
-      const winningIndex =
-        discounts.length - 1 - Math.floor(normalizedRotation / sliceDegree);
-      setResult(discounts[winningIndex]);
+      setResult(discounts[selectedIndex]);
     }, 3000); // Duration should match the CSS animation duration
   };
 
@@ -54,38 +63,65 @@ const DiscountRoulette = () => {
           }}
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
-            {discounts.map((discount, index) => (
-              <g key={index} transform={`rotate(${index * 90} 50 50)`}>
-                <path
-                  d="M50 50 L50 0 A50 50 0 0 1 100 50 Z"
-                  fill={discount.color}
-                />
-                <text
-                  x="50"
-                  y="15"
-                  textAnchor="middle"
-                  fill={discount.textColor}
-                  fontSize="8"
-                  fontWeight="bold"
-                  transform="rotate(45 50 15)"
-                >
-                  {discount.text}
-                </text>
-                {discount.text === 'Tente' && (
+            {discounts.map((discount, index) => {
+              const { color, text, textColor } = discount;
+
+              // Calculate start and end angles
+              const startAngle = index * sliceDegree;
+              const endAngle = startAngle + sliceDegree;
+              const largeArcFlag = sliceDegree > 180 ? 1 : 0;
+
+              // Convert angles to radians
+              const startRadians = ((startAngle - 90) * Math.PI) / 180;
+              const endRadians = ((endAngle - 90) * Math.PI) / 180;
+
+              // Calculate coordinates for the arc
+              const x1 = 50 + 50 * Math.cos(startRadians);
+              const y1 = 50 + 50 * Math.sin(startRadians);
+              const x2 = 50 + 50 * Math.cos(endRadians);
+              const y2 = 50 + 50 * Math.sin(endRadians);
+
+              // Calculate text position
+              const textAngle = startAngle + sliceDegree / 2;
+              const textRadians = ((textAngle - 90) * Math.PI) / 180;
+              const textX = 50 + 35 * Math.cos(textRadians);
+              const textY = 50 + 35 * Math.sin(textRadians);
+
+              return (
+                <g key={index}>
+                  <path
+                    d={`M50,50 L${x1},${y1} A50,50 0 ${largeArcFlag},1 ${x2},${y2} z`}
+                    fill={color}
+                  />
                   <text
-                    x="50"
-                    y="22"
+                    x={textX}
+                    y={textY}
                     textAnchor="middle"
-                    fill={discount.textColor}
-                    fontSize="8"
+                    fill={textColor}
+                    fontSize="5"
                     fontWeight="bold"
-                    transform="rotate(45 50 22)"
+                    transform={`rotate(${textAngle}, ${textX}, ${textY})`}
                   >
-                    novamente
+                    {text}
                   </text>
-                )}
-              </g>
-            ))}
+                  {text === 'Tente' && (
+                    <text
+                      x={textX}
+                      y={textY + 5}
+                      textAnchor="middle"
+                      fill={textColor}
+                      fontSize="5"
+                      fontWeight="bold"
+                      transform={`rotate(${textAngle}, ${textX}, ${
+                        textY + 5
+                      })`}
+                    >
+                      novamente
+                    </text>
+                  )}
+                </g>
+              );
+            })}
           </svg>
         </div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full">
@@ -105,7 +141,11 @@ const DiscountRoulette = () => {
         </button>
       </div>
       {result && (
-        <div className="text-2xl font-bold text-center text-blue-800">
+        <div
+          className="text-2xl font-bold text-center text-blue-800"
+          role="alert"
+          aria-live="assertive"
+        >
           {result.text !== 'Tente'
             ? `Parabéns! Você ganhou ${result.text} de desconto!`
             : 'Tente novamente.'}
