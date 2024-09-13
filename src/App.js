@@ -3,17 +3,17 @@ import { ArrowDown } from 'lucide-react';
 
 const discounts = [
   { text: '30% OFF', probability: 0.01, color: '#ff7ab5', textColor: 'black' },
-  { text: 'TENTE NOVAMENTE', probability: 0.1199, color: '#ffd2e6', textColor: 'black' },
-  { text: '20% OFF', probability: 0.04, color: '#ff7ab5', textColor: 'black' },
+  { text: '5% OFF', probability: 0.10, color: '#ffd2e6', textColor: 'black' },
+  { text: 'FRETE\nGRÁTIS', probability: 0.045, color: '#ff7ab5', textColor: 'black' },
   { text: '15% OFF', probability: 0.14, color: '#ffd2e6', textColor: 'black' },
   { text: '15% OFF', probability: 0.15, color: '#ff7ab5', textColor: 'black' },
   { text: '5% OFF', probability: 0.12, color: '#ffd2e6', textColor: 'black' },
-  { text: '5% OFF', probability: 0.10, color: '#ff7ab5', textColor: 'black' },
-  { text: 'FRETE GRÁTIS', probability: 0.045, color: '#ffd2e6', textColor: 'black' },
-  { text: 'FRETE GRÁTIS', probability: 0.065, color: '#ff7ab5', textColor: 'black' },
-  { text: 'BRINDE DE SKIN CARE', probability: 0.05, color: '#ffd2e6', textColor: 'black' },
-  { text: 'VESTIDO DA NOVA COLEÇÃO', probability: 0.0002, color: '#ff7ab5', textColor: 'black' },
-  { text: 'TENTE NOVAMENTE', probability: 0.1599, color: '#ffd2e6', textColor: 'black' },
+  { text: 'TENTE\nNOVAMENTE', probability: 0.1199, color: '#ff7ab5', textColor: 'black' },
+  { text: '20% OFF', probability: 0.04, color: '#ffd2e6', textColor: 'black' },
+  { text: 'FRETE\nGRÁTIS', probability: 0.065, color: '#ff7ab5', textColor: 'black' },
+  { text: 'BRINDE DE\nSKIN CARE', probability: 0.05, color: '#ffd2e6', textColor: 'black' },
+  { text: 'VESTIDO DA\nNOVA COLEÇÃO', probability: 0.0002, color: '#ff7ab5', textColor: 'black' },
+  { text: 'TENTE\nNOVAMENTE', probability: 0.1599, color: '#ffd2e6', textColor: 'black' },
 ];
 
 const DiscountRoulette = () => {
@@ -58,11 +58,20 @@ const DiscountRoulette = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen" style={{ backgroundColor: '#ffdce3' }}>
-      <h1 className="text-4xl font-bold mb-8 text-center" style={{ color: '#cf0265' }}>
+    <div
+      className="flex flex-col items-center justify-center min-h-screen p-4"
+      style={{ backgroundColor: '#ffdce3' }}
+    >
+      <h1
+        className="text-4xl font-bold mb-8 text-center"
+        style={{ color: '#cf0265' }}
+      >
         Roleta da Sorte Purchase Store - Dia do Cliente
       </h1>
-      <div className="relative w-80 h-80 mb-8">
+      <div
+        className="relative mb-8"
+        style={{ width: '500px', height: '500px' }}
+      >
         {/* Position the arrow above the wheel */}
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-10">
           <ArrowDown size={48} className="text-black" />
@@ -70,7 +79,9 @@ const DiscountRoulette = () => {
         <div
           className="w-full h-full rounded-full overflow-hidden shadow-lg"
           style={{
-            transition: spinning ? 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)' : 'none',
+            transition: spinning
+              ? 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)'
+              : 'none',
             transform: `rotate(${rotation}deg)`,
             border: `8px solid #cf0265`,
           }}
@@ -94,11 +105,21 @@ const DiscountRoulette = () => {
               const x2 = 50 + 50 * Math.cos(endRadians);
               const y2 = 50 + 50 * Math.sin(endRadians);
 
-              // Calculate text position
+              // Calculate text position closer to the center
               const textAngle = startAngle + sliceDegree / 2;
               const textRadians = ((textAngle - 90) * Math.PI) / 180;
               const textX = 50 + 30 * Math.cos(textRadians);
               const textY = 50 + 30 * Math.sin(textRadians);
+
+              // Determine font size based on text length
+              let fontSize = 4;
+              const textLength = text.replace('\n', '').length;
+              if (textLength > 10) {
+                fontSize = 3.5;
+              }
+              if (textLength > 15) {
+                fontSize = 3;
+              }
 
               return (
                 <g key={index}>
@@ -111,11 +132,19 @@ const DiscountRoulette = () => {
                     y={textY}
                     textAnchor="middle"
                     fill={textColor}
-                    fontSize="4"
+                    fontSize={fontSize}
                     fontWeight="bold"
-                    transform={`rotate(${textAngle}, ${textX}, ${textY})`}
+                    transform={`rotate(${textAngle}, ${textX}, ${textY}) rotate(90, ${textX}, ${textY})`}
+                    style={{
+                      pointerEvents: 'none',
+                      userSelect: 'none',
+                    }}
                   >
-                    {text}
+                    {text.split('\n').map((line, i) => (
+                      <tspan key={i} x={textX} dy={`${i * 1.2}em`}>
+                        {line}
+                      </tspan>
+                    ))}
                   </text>
                 </g>
               );
@@ -145,8 +174,8 @@ const DiscountRoulette = () => {
           aria-live="assertive"
           style={{ color: '#cf0265' }}
         >
-          {result.text !== 'TENTE NOVAMENTE'
-            ? `Parabéns! Você ganhou ${result.text}!`
+          {result.text !== 'TENTE\nNOVAMENTE'
+            ? `Parabéns! Você ganhou ${result.text.replace('\n', ' ')}!`
             : 'Tente novamente.'}
         </div>
       )}
