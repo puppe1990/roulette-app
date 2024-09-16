@@ -22,6 +22,7 @@ const DiscountRoulette = () => {
   const [result, setResult] = useState(null);
 
   const sliceDegree = 360 / discounts.length;
+  const SPIN_DURATION = 3000; // in milliseconds
 
   const spinWheel = () => {
     if (spinning) return;
@@ -55,16 +56,23 @@ const DiscountRoulette = () => {
     setTimeout(() => {
       setSpinning(false);
       setResult(discounts[selectedIndex]);
-    }, 3000); // Duration should match the CSS animation duration
+    }, SPIN_DURATION);
   };
 
   // Function to copy the coupon code
   const copyCode = () => {
     if (result && result.code) {
-      navigator.clipboard.writeText(result.code);
-      alert('Código copiado para a área de transferência!');
+      navigator.clipboard.writeText(result.code)
+        .then(() => {
+          alert('Código copiado para a área de transferência!');
+        })
+        .catch(() => {
+          alert('Não foi possível copiar o código. Por favor, copie manualmente.');
+        });
     }
   };
+
+  const specialPrizes = ['BRINDE DE\nSKIN CARE', 'VESTIDO DA\nNOVA COLEÇÃO'];
 
   return (
     <div
@@ -97,7 +105,7 @@ const DiscountRoulette = () => {
           className="w-full h-full rounded-full overflow-hidden shadow-lg"
           style={{
             transition: spinning
-              ? 'transform 3s cubic-bezier(0.33, 1, 0.68, 1)'
+              ? `transform ${SPIN_DURATION}ms cubic-bezier(0.33, 1, 0.68, 1)`
               : 'none',
             transform: `rotate(${rotation}deg)`,
             border: '8px solid #cf0265',
@@ -158,7 +166,7 @@ const DiscountRoulette = () => {
                     }}
                   >
                     {text.split('\n').map((line, i) => (
-                      <tspan key={i} x={textX} dy={`${i * 1.2}em`}>
+                      <tspan key={i} x={textX} dy={i === 0 ? '0em' : '1.2em'}>
                         {line}
                       </tspan>
                     ))}
@@ -171,7 +179,7 @@ const DiscountRoulette = () => {
       </div>
       <div className="text-center mb-8">
         <p className="text-lg sm:text-xl mb-4" style={{ color: '#cf0265' }}>
-          Gire a roleta e ganhe na hora um super desconto!
+          Gire a roleta e ganhe na hora um super desconto na próxima compra!
         </p>
         <button
           onClick={spinWheel}
@@ -194,7 +202,8 @@ const DiscountRoulette = () => {
           {result.text !== 'TENTE\nNOVAMENTE' ? (
             <>
               <p>
-                Parabéns! Você ganhou {result.text.replace('\n', ' ')}!
+                Parabéns! Você ganhou {result.text.replace('\n', ' ')}
+                {specialPrizes.includes(result.text) ? ' na próxima compra' : ''}!
               </p>
               {result.code && (
                 <div className="flex flex-col items-center space-y-2">
