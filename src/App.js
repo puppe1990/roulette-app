@@ -74,6 +74,9 @@ const DiscountRoulette = () => {
 
   const specialPrizes = ['BRINDE DE\nSKIN CARE', 'VESTIDO DA\nNOVA COLEÇÃO'];
 
+  // Determine if the button should be disabled
+  const isButtonDisabled = spinning || (result && result.text !== 'TENTE\nNOVAMENTE');
+
   return (
     <div
       className="flex flex-col items-center justify-center min-h-screen p-4"
@@ -183,8 +186,10 @@ const DiscountRoulette = () => {
         </p>
         <button
           onClick={spinWheel}
-          disabled={spinning}
-          className="px-6 sm:px-8 py-2 sm:py-3 text-white text-lg sm:text-xl rounded-full focus:outline-none focus:ring-4 disabled:opacity-50 transition"
+          disabled={isButtonDisabled}
+          className={`px-6 sm:px-8 py-2 sm:py-3 text-white text-lg sm:text-xl rounded-full focus:outline-none focus:ring-4 transition ${
+            isButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
           style={{
             backgroundColor: '#cf0265',
           }}
